@@ -1,1 +1,812 @@
-404: Not Found
+<!DOCTYPE html>
+<html lang="da">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MatchHub Energi — Fuld Demo</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --green: #1D9E75; --green-dark: #0F6E56; --green-light: #E1F5EE; --green-mid: #9FE1CB;
+  --blue: #185FA5; --blue-light: #E6F1FB;
+  --amber: #854F0B; --amber-light: #FAEEDA;
+  --red: #A32D2D; --red-light: #FCEBEB;
+  --ink: #0D1117; --ink-soft: #374151; --ink-muted: #6B7280; --ink-faint: #9CA3AF;
+  --surface: #FFFFFF; --surface-2: #F8FAFB; --surface-3: #F1F5F4;
+  --border: #E5EAE8; --border-strong: #CBD5D1;
+  --r: 12px; --rl: 16px; --rxl: 24px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'DM Sans', sans-serif; background: #EEF2F0; min-height: 100vh; color: var(--ink); }
+
+/* TOP NAV */
+.topnav { background: var(--ink); padding: 0 1.5rem; display: flex; align-items: center; justify-content: space-between; height: 52px; position: sticky; top: 0; z-index: 100; gap: 1rem; }
+.topnav-logo { font-size: 15px; font-weight: 600; color: #fff; flex-shrink: 0; }
+.topnav-logo span { color: var(--green); }
+.topnav-steps { display: flex; gap: 3px; overflow-x: auto; }
+.ns { padding: 5px 11px; border-radius: 20px; font-size: 11px; font-weight: 500; cursor: pointer; color: rgba(255,255,255,0.35); transition: all 0.2s; border: 1px solid transparent; white-space: nowrap; }
+.ns.active { background: var(--green); color: #fff; }
+.ns.done { color: rgba(255,255,255,0.6); border-color: rgba(255,255,255,0.12); }
+.ns:hover:not(.active) { color: rgba(255,255,255,0.7); }
+.portal-switcher { display: flex; gap: 4px; flex-shrink: 0; }
+.ps-btn { padding: 5px 12px; border-radius: 20px; font-size: 11px; font-weight: 500; cursor: pointer; border: 1px solid rgba(255,255,255,0.2); background: transparent; color: rgba(255,255,255,0.5); transition: all 0.2s; white-space: nowrap; }
+.ps-btn.active { background: rgba(255,255,255,0.15); color: #fff; border-color: rgba(255,255,255,0.3); }
+
+/* LAYOUT */
+.main { max-width: 680px; margin: 0 auto; padding: 1.5rem 1rem 4rem; }
+.screen { display: none; animation: fu 0.25s ease; }
+.screen.active { display: block; }
+@keyframes fu { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
+
+/* CARDS */
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--rl); padding: 1.25rem; margin-bottom: 1rem; }
+.card-title { font-size: 16px; font-weight: 600; color: var(--ink); letter-spacing: -0.3px; margin-bottom: 4px; }
+.card-sub { font-size: 13px; color: var(--ink-muted); line-height: 1.6; margin-bottom: 1rem; }
+.screen-tag { display: inline-flex; align-items: center; gap: 5px; background: var(--green-light); color: var(--green-dark); font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 20px; margin-bottom: 8px; letter-spacing: 0.04em; text-transform: uppercase; }
+.screen-title { font-size: 21px; font-weight: 600; color: var(--ink); letter-spacing: -0.5px; margin-bottom: 5px; }
+.screen-desc { font-size: 13px; color: var(--ink-muted); line-height: 1.6; margin-bottom: 1.25rem; }
+
+/* FORM */
+.lbl { font-size: 12px; font-weight: 500; color: var(--ink-soft); margin-bottom: 5px; display: block; }
+.field { width: 100%; padding: 10px 13px; border: 1px solid var(--border-strong); border-radius: var(--r); font-size: 14px; font-family: 'DM Sans', sans-serif; color: var(--ink); background: var(--surface-2); outline: none; transition: border-color 0.15s; margin-bottom: 0.9rem; }
+.field:focus { border-color: var(--green); background: var(--surface); }
+.mono { font-family: 'DM Mono', monospace; font-size: 13px; }
+.frow { display: flex; gap: 8px; margin-bottom: 0.9rem; }
+.frow .field { margin-bottom: 0; }
+
+/* BUTTONS */
+.btn { padding: 10px 18px; border-radius: var(--r); font-size: 14px; font-weight: 500; font-family: 'DM Sans', sans-serif; cursor: pointer; transition: all 0.15s; border: none; }
+.btn-p { background: var(--green); color: #fff; }
+.btn-p:hover { background: var(--green-dark); }
+.btn-o { background: transparent; border: 1px solid var(--border-strong); color: var(--ink-soft); }
+.btn-o:hover { border-color: var(--green); color: var(--green); }
+.btn-d { background: var(--red); color: #fff; }
+.btn-d:hover { background: #7A2020; }
+.btn-w { background: #1B3A6B; color: #fff; }
+.btn-w:hover { background: #142d54; }
+.btn-full { width: 100%; }
+.btn-lg { padding: 13px 22px; font-size: 15px; border-radius: var(--rl); }
+
+/* TAGS */
+.tag { display: inline-flex; align-items: center; gap: 3px; font-size: 11px; font-weight: 500; padding: 3px 8px; border-radius: 20px; }
+.tg { background: var(--green-light); color: var(--green-dark); }
+.tb { background: var(--blue-light); color: var(--blue); }
+.ta { background: var(--amber-light); color: var(--amber); }
+.tr { background: var(--red-light); color: var(--red); }
+.ts { background: var(--surface-3); color: var(--ink-muted); border: 1px solid var(--border); }
+
+/* COMPANY BOX */
+.co-box { background: var(--surface-3); border: 1px solid var(--border); border-radius: var(--r); padding: 1rem; margin-bottom: 1rem; display: none; }
+.co-head { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+.co-av { width: 34px; height: 34px; background: var(--green-light); border-radius: 9px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; color: var(--green-dark); flex-shrink: 0; }
+.co-name { font-size: 14px; font-weight: 600; color: var(--ink); }
+.co-cvr { font-size: 11px; color: var(--ink-muted); font-family: 'DM Mono', monospace; }
+.co-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; }
+.co-item { font-size: 12px; color: var(--ink-muted); }
+.co-item strong { color: var(--ink-soft); font-weight: 500; }
+
+/* CONSENT */
+.consent-box { background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--r); padding: 1rem; margin-bottom: 1rem; }
+.cr { display: flex; gap: 9px; align-items: flex-start; margin-bottom: 7px; }
+.cr:last-child { margin-bottom: 0; }
+.cr input[type=checkbox] { width: 15px; height: 15px; accent-color: var(--green); flex-shrink: 0; margin-top: 2px; cursor: pointer; }
+.cr-text { font-size: 12px; color: var(--ink-muted); line-height: 1.6; }
+.cr-text strong { color: var(--ink-soft); }
+.gdpr-stamp { display: inline-flex; align-items: center; gap: 5px; background: var(--green-light); color: var(--green-dark); font-size: 10px; font-weight: 600; padding: 3px 9px; border-radius: 5px; margin-top: 6px; font-family: 'DM Mono', monospace; letter-spacing: 0.03em; }
+
+/* CONTACT PREFERENCE */
+.contact-pref { border: 1px solid var(--border); border-radius: var(--r); overflow: hidden; margin-bottom: 1rem; }
+.cp-header { background: var(--surface-2); padding: 10px 13px; font-size: 12px; font-weight: 600; color: var(--ink-soft); border-bottom: 1px solid var(--border); }
+.cp-option { display: flex; gap: 10px; align-items: flex-start; padding: 10px 13px; border-bottom: 1px solid var(--border); cursor: pointer; transition: background 0.15s; }
+.cp-option:last-child { border-bottom: none; }
+.cp-option:hover { background: var(--surface-2); }
+.cp-option.selected { background: var(--green-light); }
+.cp-radio { width: 16px; height: 16px; border-radius: 50%; border: 1.5px solid var(--border-strong); flex-shrink: 0; margin-top: 2px; display: flex; align-items: center; justify-content: center; transition: all 0.15s; }
+.cp-option.selected .cp-radio { border-color: var(--green); background: var(--green); }
+.cp-radio-dot { width: 6px; height: 6px; border-radius: 50%; background: #fff; display: none; }
+.cp-option.selected .cp-radio-dot { display: block; }
+.cp-label { font-size: 13px; font-weight: 500; color: var(--ink); margin-bottom: 2px; }
+.cp-sub { font-size: 11px; color: var(--ink-muted); }
+
+/* UPLOAD */
+.upload-zone { border: 1.5px dashed var(--border-strong); border-radius: var(--rl); padding: 1.75rem; text-align: center; cursor: pointer; background: var(--surface-2); margin-bottom: 1rem; transition: all 0.2s; }
+.upload-zone:hover { border-color: var(--green); background: var(--green-light); }
+.up-icon { width: 44px; height: 44px; background: var(--green-light); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px; }
+.up-title { font-size: 14px; font-weight: 600; color: var(--ink); margin-bottom: 3px; }
+.up-sub { font-size: 12px; color: var(--ink-muted); }
+.prog-wrap { display: none; padding: 0.25rem 0 0.75rem; }
+.prog-top { display: flex; justify-content: space-between; font-size: 12px; color: var(--ink-muted); margin-bottom: 6px; }
+.prog-bar { height: 3px; background: var(--surface-3); border-radius: 2px; overflow: hidden; margin-bottom: 5px; }
+.prog-fill { height: 100%; background: var(--green); border-radius: 2px; width: 0%; transition: width 0.4s ease; }
+.prog-step { font-size: 11px; color: var(--ink-faint); font-family: 'DM Mono', monospace; }
+
+/* STATS */
+.stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 1rem; }
+.stat-box { background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--r); padding: 12px 10px; text-align: center; }
+.sv { font-size: 19px; font-weight: 600; color: var(--ink); letter-spacing: -0.3px; }
+.sv.red { color: var(--red); } .sv.green { color: var(--green-dark); }
+.sl { font-size: 11px; color: var(--ink-muted); margin-top: 2px; line-height: 1.4; }
+
+/* INSIGHT */
+.insight { background: #FFF8ED; border: 1px solid #F5D08A; border-radius: var(--r); padding: 11px 13px; margin-bottom: 1rem; font-size: 13px; color: #6B4C0A; line-height: 1.7; }
+
+/* SUPPLIER CARDS */
+.sc { border: 1px solid var(--border); border-radius: var(--rl); padding: 1rem 1.1rem; margin-bottom: 10px; background: var(--surface); }
+.sc.best { border: 2px solid var(--green); }
+.sc-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 5px; }
+.sc-name { font-size: 14px; font-weight: 600; color: var(--ink); }
+.sc-best { font-size: 11px; color: var(--green-dark); font-weight: 500; margin-top: 2px; }
+.sc-save { font-size: 15px; font-weight: 600; color: var(--green-dark); }
+.sc-detail { font-size: 12px; color: var(--ink-muted); line-height: 1.7; margin-bottom: 10px; }
+.sc-footer { display: flex; justify-content: space-between; align-items: center; }
+
+/* LEAD PACKAGE */
+.lp { background: var(--ink); border-radius: var(--rxl); padding: 1.4rem; color: #fff; margin-bottom: 1rem; }
+.lp-head { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.1rem; padding-bottom: 1rem; border-bottom: 1px solid rgba(255,255,255,0.08); }
+.lp-label { font-size: 10px; font-weight: 600; color: rgba(255,255,255,0.35); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 4px; }
+.lp-id { font-size: 17px; font-weight: 600; color: #fff; font-family: 'DM Mono', monospace; }
+.lp-stamp { background: var(--green); color: #fff; font-size: 10px; font-weight: 600; padding: 3px 10px; border-radius: 5px; font-family: 'DM Mono', monospace; }
+.lp-section { margin-bottom: 0.9rem; }
+.lp-sec-title { font-size: 10px; font-weight: 600; color: rgba(255,255,255,0.3); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 6px; }
+.lp-row { display: flex; justify-content: space-between; align-items: center; padding: 5px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+.lp-row:last-child { border-bottom: none; }
+.lp-k { font-size: 12px; color: rgba(255,255,255,0.4); }
+.lp-v { font-size: 12px; font-weight: 500; color: #fff; font-family: 'DM Mono', monospace; }
+.lp-v.hi { color: var(--green-mid); } .lp-v.wa { color: #FAC775; }
+.gdpr-row { display: flex; align-items: center; gap: 7px; padding: 7px 9px; background: rgba(29,158,117,0.15); border-radius: 7px; margin-top: 7px; }
+.gdpr-dot { width: 5px; height: 5px; background: var(--green-mid); border-radius: 50%; flex-shrink: 0; }
+.gdpr-lbl { font-size: 10px; color: var(--green-mid); font-family: 'DM Mono', monospace; }
+
+/* CONTACT INDICATOR */
+.contact-indicator { display: flex; align-items: center; gap: 7px; padding: 7px 9px; border-radius: 7px; margin-top: 7px; }
+.ci-yes { background: rgba(24,95,165,0.2); }
+.ci-no { background: rgba(255,255,255,0.05); }
+.ci-dot-yes { width: 5px; height: 5px; background: #6DB3F2; border-radius: 50%; flex-shrink: 0; }
+.ci-dot-no { width: 5px; height: 5px; background: rgba(255,255,255,0.2); border-radius: 50%; flex-shrink: 0; }
+.ci-text-yes { font-size: 10px; color: #6DB3F2; font-family: 'DM Mono', monospace; }
+.ci-text-no { font-size: 10px; color: rgba(255,255,255,0.3); font-family: 'DM Mono', monospace; }
+
+/* PARTNER PORTAL */
+.portal-head { background: #1B3A6B; border-radius: var(--rl) var(--rl) 0 0; padding: 0.9rem 1.2rem; display: flex; align-items: center; justify-content: space-between; }
+.portal-logo { font-size: 13px; font-weight: 600; color: #fff; }
+.portal-logo span { color: #6DB3F2; }
+.portal-badge { background: rgba(255,255,255,0.12); color: rgba(255,255,255,0.7); font-size: 11px; padding: 3px 9px; border-radius: 20px; font-family: 'DM Mono', monospace; }
+.portal-body { background: var(--surface); border: 1px solid var(--border); border-top: none; border-radius: 0 0 var(--rl) var(--rl); padding: 1.2rem; margin-bottom: 1rem; }
+.portal-ch { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border); }
+.portal-co { font-size: 15px; font-weight: 600; color: var(--ink); margin-bottom: 2px; }
+.portal-meta { font-size: 12px; color: var(--ink-muted); font-family: 'DM Mono', monospace; }
+.portal-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; margin-bottom: 1rem; }
+.pi { background: var(--surface-2); border-radius: 8px; padding: 9px 11px; }
+.pi-l { font-size: 10px; color: var(--ink-faint); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 2px; }
+.pi-v { font-size: 13px; font-weight: 500; color: var(--ink); }
+.pi-v.green { color: var(--green-dark); } .pi-v.mono { font-family: 'DM Mono', monospace; }
+.portal-gdpr { display: flex; align-items: center; gap: 7px; background: var(--green-light); border-radius: 8px; padding: 9px 11px; margin-bottom: 1rem; }
+.portal-contact-banner { display: flex; align-items: center; gap: 7px; border-radius: 8px; padding: 9px 11px; margin-bottom: 1rem; }
+.pcb-yes { background: var(--blue-light); }
+.pcb-no { background: var(--surface-3); }
+.portal-actions { display: grid; grid-template-columns: 1fr auto; gap: 8px; }
+.portal-note { font-size: 11px; color: var(--ink-faint); text-align: center; margin-top: 7px; }
+
+/* SUCCESS */
+.success-box { background: var(--green-light); border: 1px solid var(--green-mid); border-radius: var(--rl); padding: 1.5rem; text-align: center; display: none; }
+.success-icon { width: 48px; height: 48px; background: var(--green); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px; }
+.success-title { font-size: 16px; font-weight: 600; color: var(--green-dark); margin-bottom: 5px; }
+.success-sub { font-size: 13px; color: var(--green-dark); opacity: 0.8; line-height: 1.7; }
+
+/* CUSTOMER PORTAL */
+.cp-portal { background: var(--surface); border: 1px solid var(--border); border-radius: var(--rl); overflow: hidden; margin-bottom: 1rem; }
+.cpp-head { background: var(--green); padding: 1rem 1.2rem; display: flex; align-items: center; justify-content: space-between; }
+.cpp-logo { font-size: 14px; font-weight: 600; color: #fff; }
+.cpp-user { font-size: 12px; color: rgba(255,255,255,0.7); }
+.cpp-body { padding: 1.2rem; }
+.status-card { border: 1px solid var(--border); border-radius: var(--r); padding: 1rem; margin-bottom: 1rem; }
+.status-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+.status-title { font-size: 14px; font-weight: 600; color: var(--ink); }
+.status-row { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+.status-row:last-child { border-bottom: none; }
+.status-key { color: var(--ink-muted); }
+.status-val { font-weight: 500; color: var(--ink); }
+.action-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; }
+.cancel-warning { background: var(--red-light); border: 1px solid #F09595; border-radius: var(--r); padding: 10px 12px; margin-bottom: 1rem; font-size: 12px; color: var(--red); line-height: 1.6; display: none; }
+.savings-card { background: var(--green-light); border-radius: var(--r); padding: 1rem; margin-bottom: 1rem; display: flex; justify-content: space-between; align-items: center; }
+.savings-val { font-size: 22px; font-weight: 600; color: var(--green-dark); }
+.savings-lbl { font-size: 12px; color: var(--green-dark); opacity: 0.7; margin-top: 2px; }
+
+/* HERO */
+.hero { background: var(--ink); border-radius: var(--rxl); padding: 1.4rem; margin-top: 1.5rem; position: relative; overflow: hidden; }
+.hero::before { content:''; position:absolute; top:-40px; right:-40px; width:140px; height:140px; background:radial-gradient(circle,rgba(29,158,117,0.2) 0%,transparent 70%); border-radius:50%; }
+.hero-lbl { font-size: 10px; font-weight: 600; color: rgba(255,255,255,0.3); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 6px; }
+.hero-title { font-size: 18px; font-weight: 600; color: #fff; letter-spacing: -0.4px; margin-bottom: 4px; line-height: 1.3; }
+.hero-title span { color: var(--green-mid); }
+.hero-sub { font-size: 12px; color: rgba(255,255,255,0.4); line-height: 1.6; }
+.hero-stats { display: flex; gap: 1.25rem; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.07); }
+.hs-v { font-size: 15px; font-weight: 600; color: #fff; }
+.hs-l { font-size: 10px; color: rgba(255,255,255,0.3); margin-top: 1px; }
+
+.divider { height: 1px; background: var(--border); margin: 1rem 0; }
+</style>
+</head>
+<body>
+
+<nav class="topnav">
+  <div class="topnav-logo">Match<span>Hub</span></div>
+  <div class="topnav-steps" id="step-nav">
+    <div class="ns active" onclick="goTo(1)" id="nav-1">Virksomhed</div>
+    <div class="ns" onclick="goTo(2)" id="nav-2">Analyse</div>
+    <div class="ns" onclick="goTo(3)" id="nav-3">Tilbud</div>
+    <div class="ns" onclick="goTo(4)" id="nav-4">Lead-pakke</div>
+    <div class="ns" onclick="goTo(5)" id="nav-5">Partnerportal</div>
+  </div>
+  <button onclick="resetAll()" style="background:transparent;border:1px solid rgba(255,255,255,0.2);color:rgba(255,255,255,0.5);font-size:11px;padding:5px 12px;border-radius:20px;cursor:pointer;font-family:'DM Sans',sans-serif;margin-right:8px;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.5)'">↺ Nulstil</button>
+<div class="portal-switcher">
+    <button class="ps-btn active" onclick="switchView('flow')" id="pv-flow">Flow</button>
+    <button class="ps-btn" onclick="switchView('kunde')" id="pv-kunde">Kundeportal</button>
+    <button class="ps-btn" onclick="switchView('lever')" id="pv-lever">Leverandør</button>
+  </div>
+</nav>
+
+<div class="main">
+
+<!-- =================== FLOW SCREENS =================== -->
+
+<!-- S1: VIRKSOMHED -->
+<div id="screen-1" class="screen active">
+  <div class="screen-tag">Trin 1 af 5</div>
+  <div class="screen-title">Find din virksomhed</div>
+  <div class="screen-desc">Indtast CVR — vi henter virksomhedsdata automatisk og dokumenterer samtykke.</div>
+  <div class="card">
+    <div class="card-title">CVR-opslag</div>
+    <div class="card-sub">Henter automatisk fra Erhvervsstyrelsen</div>
+    <label class="lbl">CVR-nummer</label>
+    <div class="frow">
+      <input class="field mono" id="cvr-input" type="text" placeholder="12345678" maxlength="8" oninput="this.value=this.value.replace(/\D/g,'')">
+      <button class="btn btn-p" onclick="lookupCVR()" style="white-space:nowrap;">Hent data →</button>
+    </div>
+    <div class="co-box" id="co-box">
+      <div class="co-head">
+        <div class="co-av" id="co-init">HT</div>
+        <div><div class="co-name" id="co-name">Hansen Tømrer ApS</div><div class="co-cvr" id="co-cvr">CVR: 12345678</div></div>
+        <span class="tag tg" style="margin-left:auto;">✓ Verificeret</span>
+      </div>
+      <div class="co-grid">
+        <div class="co-item"><strong>Branche:</strong> <span id="co-branche">Byggeri</span></div>
+        <div class="co-item"><strong>Ansatte:</strong> <span id="co-ansatte">12</span></div>
+        <div class="co-item"><strong>Adresse:</strong> <span id="co-adresse">Brøndby</span></div>
+        <div class="co-item"><strong>Stiftet:</strong> <span id="co-stiftet">2011</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="card" id="consent-card" style="display:none;">
+    <div class="card-title">Samtykke & GDPR</div>
+    <div class="card-sub">Dokumenteres med timestamp og IP-adresse</div>
+    <div class="consent-box">
+      <div class="cr"><input type="checkbox" checked><div class="cr-text">Jeg giver samtykke til at MatchHub analyserer og gemmer mine energidata med henblik på at finde den bedste aftale — nu og fremover. <strong>MatchHub må proaktivt kontakte mig</strong> når min aftale nærmer sig udløb, priserne ændrer sig, eller der er en bedre løsning tilgængelig.</div></div>
+    </div>
+    <div id="verify-section" style="display:none;">
+      <div class="divider"></div>
+      <div class="card-title" style="margin-bottom:4px;">Kontaktoplysninger</div>
+      <div class="card-sub">Vi bruger din e-mail og dit mobilnummer til identifikation, ordrebekræftelse og relevant kontakt om din aftale.</div>
+      <label class="lbl">Email</label>
+      <input class="field" id="email-input" type="email" placeholder="lars@hansen-toemrer.dk">
+      <label class="lbl">Mobilnummer</label>
+      <div class="frow">
+        <input class="field" id="phone-input" type="tel" placeholder="+45 40 20 30 40" style="flex:1;margin-bottom:0;">
+        <button class="btn btn-p" onclick="sendVerification()" id="verify-btn" style="white-space:nowrap;">Send kode</button>
+      </div>
+      <div id="verify-code-section" style="display:none;margin-top:0.5rem;">
+        <label class="lbl">Indtast verifikationskode</label>
+        <div class="frow">
+          <input class="field mono" id="code-input" type="text" placeholder="123456" maxlength="6" style="flex:1;margin-bottom:0;">
+          <button class="btn btn-p" onclick="confirmVerification()" style="white-space:nowrap;">Bekræft</button>
+        </div>
+        <div style="font-size:11px;color:var(--ink-faint);margin-top:4px;" id="verify-hint">Kode sendt til dit mobilnummer · Gyldigt i 10 min</div>
+      </div>
+      <div id="verified-badge" style="display:none;background:var(--green-light);border-radius:8px;padding:8px 12px;font-size:12px;color:var(--green-dark);font-weight:500;margin-bottom:1rem;">✓ Mobilnummer verificeret</div>
+    </div>
+    <button class="btn btn-p btn-full btn-lg" onclick="goTo(2)" id="continue-btn" style="display:none;">Fortsæt til analyse →</button>
+  </div>
+</div>
+
+<!-- S2: ANALYSE -->
+<div id="screen-2" class="screen">
+  <div class="screen-tag">Trin 2 af 5</div>
+  <div class="screen-title">Upload elregning</div>
+  <div class="screen-desc">AI analyserer forbrug, pris og kontraktudløb automatisk.</div>
+  <div class="card">
+    <label for="bill-upload" style="cursor:pointer;display:block;">
+      <div class="upload-zone" id="upload-zone">
+        <div class="up-icon">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 2v10M6 6l4-4 4 4M3 15h14v2a1 1 0 01-1 1H4a1 1 0 01-1-1v-2z" stroke="#0F6E56" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="up-title">Klik for at uploade elregning</div>
+        <div class="up-sub">PDF eller billede · AI aflæser automatisk · Alle leverandører</div>
+      </div>
+    </label>
+    <input type="file" id="bill-upload" accept=".pdf,image/*" style="display:none;" onchange="handleFileUpload(this)">
+    <div class="prog-wrap" id="prog-wrap">
+      <div class="prog-top"><span id="prog-status">Indlæser...</span><span id="prog-pct">0%</span></div>
+      <div class="prog-bar"><div class="prog-fill" id="prog-fill"></div></div>
+      <div class="prog-step" id="prog-step">—</div>
+    </div>
+    <div id="analysis-result" style="display:none;">
+      <div class="stat-grid">
+        <div class="stat-box"><div class="sv">4.020</div><div class="sl">kWh denne måned</div></div>
+        <div class="stat-box"><div class="sv red">2,34 kr</div><div class="sl">Din kWh-pris</div></div>
+        <div class="stat-box"><div class="sv red">9.410 kr</div><div class="sl">Månedlig udgift</div></div>
+      </div>
+      <div class="insight">Du betaler <strong>23% over markedsprisen</strong> for din branche. Din aftale hos <strong>Storstrøm Energi</strong> udløber om <strong>4 måneder</strong> — optimalt tidspunkt at skifte.</div>
+      <div class="card" style="background:var(--surface-2);margin-bottom:0;">
+        <div style="font-size:11px;font-weight:600;color:var(--ink-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:9px;">Aflæst fra din regning</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+          <div><div style="font-size:11px;color:var(--ink-faint);">Leverandør</div><div style="font-size:13px;font-weight:500;">Storstrøm Energi</div></div>
+          <div><div style="font-size:11px;color:var(--ink-faint);">Målernr.</div><div style="font-size:12px;font-family:'DM Mono',monospace;">5713 1310 0121</div></div>
+          <div><div style="font-size:11px;color:var(--ink-faint);">Aftaletype</div><div style="font-size:13px;font-weight:500;">Fastpris erhverv</div></div>
+          <div><div style="font-size:11px;color:var(--ink-faint);">Udløber</div><div style="font-size:13px;font-weight:500;color:var(--amber);">31. juli 2025</div></div>
+        </div>
+      </div>
+      <button class="btn btn-p btn-full btn-lg" onclick="goTo(3)" style="margin-top:1rem;">Se anbefalinger →</button>
+    </div>
+  </div>
+</div>
+
+<!-- S3: TILBUD -->
+<div id="screen-3" class="screen">
+  <div class="screen-tag">Trin 3 af 5</div>
+  <div class="screen-title">Dine anbefalinger</div>
+  <div class="screen-desc">Baseret på dit faktiske forbrug inkl. moms og afgifter.</div>
+  <div id="supplier-list">
+    <div class="sc best">
+      <div class="sc-top"><div><div class="sc-name">Andel Energi Erhverv</div><div class="sc-best">Bedste match til dit forbrug</div></div><div class="sc-save">Spar 2.180 kr/md</div></div>
+      <div class="sc-detail">Fastpris 1,80 kr/kWh · 12 mdr. binding · 100% grøn strøm<br><strong style="color:var(--ink-soft);">7.230 kr/md</strong> mod dine nuværende 9.410 kr</div>
+      <div class="contact-pref" id="cp-andel">
+        <div class="cp-header">Ønsker du kontakt fra Andels kundeservice inden aktivering?</div>
+        <div class="cp-option" id="cp-andel-yes" onclick="selectContact('andel','yes')">
+          <div class="cp-radio"><div class="cp-radio-dot"></div></div>
+          <div><div class="cp-label">Ja tak — ring mig op</div><div class="cp-sub">En rådgiver kontakter dig inden for 1 arbejdsdag</div></div>
+        </div>
+        <div class="cp-option selected" id="cp-andel-no" onclick="selectContact('andel','no')">
+          <div class="cp-radio"><div class="cp-radio-dot"></div></div>
+          <div><div class="cp-label">Nej tak — aktiver automatisk</div><div class="cp-sub">Skiftet håndteres helt uden kontakt</div></div>
+        </div>
+      </div>
+      <div style="font-size:12px;color:var(--ink-muted);background:var(--surface-2);border-radius:8px;padding:9px 11px;margin-bottom:10px;line-height:1.6;">
+        <strong style="color:var(--ink-soft);">Hvornår skifter jeg?</strong> Andel Energi kontakter dig direkte med den præcise overtagelsesdato — de kan se hvornår din nuværende aftale udløber og håndterer al koordinering med Storstrøm Energi.
+      </div>
+      <div class="sc-footer"><span class="tag tg">✓ Samtykke dokumenteret</span><button class="btn btn-p" onclick="acceptOffer('Andel Energi Erhverv','2.180','andel')">Accepter og skift →</button></div>
+      <div style="font-size:11px;color:var(--ink-faint);margin-top:8px;padding-top:8px;border-top:1px solid var(--border);">Du kan fortryde dit skift inden for 24 timer via din kundeportal.</div>
+    </div>
+    <div class="sc">
+      <div class="sc-top"><div><div class="sc-name">Norlys Erhverv</div></div><div class="sc-save">Spar 1.640 kr/md</div></div>
+      <div class="sc-detail">Variabel pris · Ingen binding · Vedvarende energi<br><strong style="color:var(--ink-soft);">7.770 kr/md</strong> mod dine nuværende 9.410 kr</div>
+      <div class="contact-pref" id="cp-norlys">
+        <div class="cp-header">Ønsker du kontakt fra Norlys kundeservice inden aktivering?</div>
+        <div class="cp-option" id="cp-norlys-yes" onclick="selectContact('norlys','yes')">
+          <div class="cp-radio"><div class="cp-radio-dot"></div></div>
+          <div><div class="cp-label">Ja tak — ring mig op</div><div class="cp-sub">En rådgiver kontakter dig inden for 1 arbejdsdag</div></div>
+        </div>
+        <div class="cp-option selected" id="cp-norlys-no" onclick="selectContact('norlys','no')">
+          <div class="cp-radio"><div class="cp-radio-dot"></div></div>
+          <div><div class="cp-label">Nej tak — aktiver automatisk</div><div class="cp-sub">Skiftet håndteres helt uden kontakt</div></div>
+        </div>
+      </div>
+      <div style="font-size:12px;color:var(--ink-muted);background:var(--surface-2);border-radius:8px;padding:9px 11px;margin-bottom:10px;line-height:1.6;">
+        <strong style="color:var(--ink-soft);">Hvornår skifter jeg?</strong> Norlys Erhverv kontakter dig direkte med den præcise overtagelsesdato — de håndterer al koordinering med din nuværende leverandør.
+      </div>
+      <div class="sc-footer"><span class="tag tg">✓ Samtykke dokumenteret</span><button class="btn btn-o" onclick="acceptOffer('Norlys Erhverv','1.640','norlys')">Accepter og skift →</button></div>
+      <div style="font-size:11px;color:var(--ink-faint);margin-top:8px;padding-top:8px;border-top:1px solid var(--border);">Du kan fortryde dit skift inden for 24 timer via din kundeportal.</div>
+    </div>
+    <div class="sc">
+      <div class="sc-top"><div><div class="sc-name">Altid Energi</div><span class="tag ta" style="margin-top:3px;display:inline-flex;">Grøn profil</span></div><div class="sc-save">Spar 1.220 kr/md</div></div>
+      <div class="sc-detail">100% vindenergi · 6 mdr. binding · CO₂-neutral<br><strong style="color:var(--ink-soft);">8.190 kr/md</strong> mod dine nuværende 9.410 kr</div>
+      <div class="contact-pref" id="cp-altid">
+        <div class="cp-header">Ønsker du kontakt fra Altid Energis kundeservice inden aktivering?</div>
+        <div class="cp-option" id="cp-altid-yes" onclick="selectContact('altid','yes')">
+          <div class="cp-radio"><div class="cp-radio-dot"></div></div>
+          <div><div class="cp-label">Ja tak — ring mig op</div><div class="cp-sub">En rådgiver kontakter dig inden for 1 arbejdsdag</div></div>
+        </div>
+        <div class="cp-option selected" id="cp-altid-no" onclick="selectContact('altid','no')">
+          <div class="cp-radio"><div class="cp-radio-dot"></div></div>
+          <div><div class="cp-label">Nej tak — aktiver automatisk</div><div class="cp-sub">Skiftet håndteres helt uden kontakt</div></div>
+        </div>
+      </div>
+      <div style="font-size:12px;color:var(--ink-muted);background:var(--surface-2);border-radius:8px;padding:9px 11px;margin-bottom:10px;line-height:1.6;">
+        <strong style="color:var(--ink-soft);">Hvornår skifter jeg?</strong> Altid Energi kontakter dig direkte med den præcise overtagelsesdato — de håndterer al koordinering med din nuværende leverandør.
+      </div>
+      <div class="sc-footer"><span class="tag tg">✓ Samtykke dokumenteret</span><button class="btn btn-o" onclick="acceptOffer('Altid Energi','1.220','altid')">Accepter og skift →</button></div>
+      <div style="font-size:11px;color:var(--ink-faint);margin-top:8px;padding-top:8px;border-top:1px solid var(--border);">Du kan fortryde dit skift inden for 24 timer via din kundeportal.</div>
+    </div>
+  </div>
+  <div class="success-box" id="offer-accepted">
+    <div class="success-icon"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4 10l4.5 4.5 8-8" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <div class="success-title" id="offer-title">Skift accepteret</div>
+    <div class="success-sub" id="offer-sub">Færdigpakket lead sendes nu til partnerportalen.</div>
+    <button class="btn btn-p" onclick="goTo(4)" style="margin-top:1rem;">Se hvad leverandøren modtager →</button>
+  </div>
+  <div style="font-size:12px;color:var(--ink-faint);text-align:center;margin-top:8px;" id="offer-note">Du kan annullere inden for 24 timer via din kundeportal</div>
+</div>
+
+<!-- S4: LEAD PAKKE -->
+<div id="screen-4" class="screen">
+  <div class="screen-tag">Trin 4 af 5 · Leverandørvisning</div>
+  <div class="screen-title">Færdigpakket lead</div>
+  <div class="screen-desc">Dette modtager leverandørens partnerportal. Al dokumentation er klar.</div>
+  <div class="lp">
+    <div class="lp-head">
+      <div><div class="lp-label">Lead-pakke</div><div class="lp-id">#MH-2025-08841</div></div>
+      <div class="lp-stamp">GDPR OK</div>
+    </div>
+    <div class="lp-section">
+      <div class="lp-sec-title">Virksomhed</div>
+      <div class="lp-row"><span class="lp-k">Navn</span><span class="lp-v hi">Hansen Tømrer ApS</span></div>
+      <div class="lp-row"><span class="lp-k">CVR</span><span class="lp-v">12345678</span></div>
+      <div class="lp-row"><span class="lp-k">Kontakt</span><span class="lp-v hi">Lars Hansen · +45 40 20 30 40</span></div>
+      <div class="lp-row"><span class="lp-k">Email</span><span class="lp-v hi"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="dbb7baa9a89bb3bab5a8beb5f6afb4beb6a9bea9f5bfb0">[email&#160;protected]</a></span></div>
+      <div class="lp-row"><span class="lp-k">Branche</span><span class="lp-v">Byggeri · 12 ansatte</span></div>
+    </div>
+    <div class="lp-section">
+      <div class="lp-sec-title">Energidata</div>
+      <div class="lp-row"><span class="lp-k">Målernr.</span><span class="lp-v">5713 1310 0121</span></div>
+      <div class="lp-row"><span class="lp-k">Forbrug</span><span class="lp-v hi">4.020 kWh/md</span></div>
+      <div class="lp-row"><span class="lp-k">Nuv. pris</span><span class="lp-v wa">2,34 kr/kWh · 9.410 kr/md</span></div>
+      <div class="lp-row"><span class="lp-k">Udløber</span><span class="lp-v wa">31. juli 2025</span></div>
+      <div class="lp-row"><span class="lp-k">Valgt produkt</span><span class="lp-v hi">Fastpris 1,80 kr/kWh · 12 mdr.</span></div>
+      <div class="lp-row"><span class="lp-k">Est. årsværdi</span><span class="lp-v hi">~86.760 kr</span></div>
+    </div>
+    <div class="gdpr-row"><div class="gdpr-dot"></div><div class="gdpr-lbl">SAMTYKKE · 18.03.2025 14:32:11 · IP: 185.23.x.x · GDPR ART. 6(1)(A)</div></div>
+    <div class="contact-indicator ci-yes" id="lp-contact"><div class="ci-dot-yes"></div><div class="ci-text-yes" id="lp-contact-text">KUNDESERVICE ØNSKET · RING INDEN AKTIVERING</div></div>
+  </div>
+  <button class="btn btn-p btn-full btn-lg" onclick="goTo(5)">Se partnerportal →</button>
+</div>
+
+<!-- S5: PARTNERPORTAL -->
+<div id="screen-5" class="screen">
+  <div class="screen-tag">Trin 5 af 5 · Andel internt</div>
+  <div class="screen-title">Partnerportal</div>
+  <div class="screen-desc">Sådan ser det ud hos Andels medarbejder. Ét klik — al data er klar.</div>
+  <div class="portal-head">
+    <div class="portal-logo"><span>Andel</span> Partnerportal</div>
+    <div class="portal-badge">Nyt lead · #MH-2025-08841</div>
+  </div>
+  <div class="portal-body">
+    <div class="portal-ch">
+      <div><div class="portal-co">Hansen Tømrer ApS</div><div class="portal-meta">CVR 12345678 · Lars Hansen · +45 40 20 30 40</div></div>
+      <span class="tag tg">Via MatchHub</span>
+    </div>
+    <div class="portal-grid">
+      <div class="pi"><div class="pi-l">Forbrug</div><div class="pi-v mono">4.020 kWh/md</div></div>
+      <div class="pi"><div class="pi-l">Nuv. pris</div><div class="pi-v mono" style="color:var(--red);">2,34 kr/kWh</div></div>
+      <div class="pi"><div class="pi-l">Kontraktudløb</div><div class="pi-v mono" style="color:var(--amber);">31. jul 2025</div></div>
+      <div class="pi"><div class="pi-l">Est. årsværdi</div><div class="pi-v green">86.760 kr</div></div>
+      <div class="pi"><div class="pi-l">Målernr.</div><div class="pi-v mono" style="font-size:11px;">5713 1310 0121</div></div>
+      <div class="pi"><div class="pi-l">Produkt</div><div class="pi-v" style="font-size:12px;">Fastpris 12 mdr.</div></div>
+    </div>
+    <div class="portal-contact-banner pcb-yes" id="portal-contact-banner">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 5a2 2 0 012-2h6a2 2 0 012 2v4a2 2 0 01-2 2H8l-2 2v-2H4a2 2 0 01-2-2V5z" stroke="#185FA5" stroke-width="1.5"/></svg>
+      <div style="font-size:12px;color:var(--blue);line-height:1.5;" id="portal-contact-text"><strong>Kunden ønsker opkald</strong> inden aktivering · Ring inden for 1 arbejdsdag</div>
+    </div>
+    <div class="portal-gdpr">
+      <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2 6.5l3 3 6-6" stroke="#0F6E56" stroke-width="1.5" stroke-linecap="round"/></svg>
+      <div style="font-size:12px;color:var(--green-dark);line-height:1.5;">GDPR-samtykke dokumenteret · 18.03.2025 14:32 · Art. 6(1)(a)</div>
+    </div>
+    <div id="portal-actions">
+      <div class="portal-actions">
+        <button class="btn btn-p btn-lg" onclick="approvePortal()">Godkend lead →</button>
+        <button class="btn btn-d btn-lg" onclick="rejectPortal()">Afvis</button>
+      </div>
+      <div class="portal-note">Kreditvurdering og kontraktoprettelse håndteres efter godkendelse</div>
+    </div>
+    <div id="portal-approved" style="display:none;">
+      <div style="background:var(--green-light);border-radius:var(--r);padding:1rem;text-align:center;">
+        <div style="font-size:14px;font-weight:600;color:var(--green-dark);margin-bottom:3px;">Lead godkendt</div>
+        <div style="font-size:12px;color:var(--green-dark);opacity:0.8;">Kontraktoprettelse igangsat. SMV notificeres automatisk.</div>
+      </div>
+    </div>
+    <div id="portal-rejected" style="display:none;">
+      <div style="background:var(--red-light);border-radius:var(--r);padding:1rem;text-align:center;">
+        <div style="font-size:14px;font-weight:600;color:var(--red);margin-bottom:3px;">Lead afvist</div>
+        <div style="font-size:12px;color:var(--red);opacity:0.8;">SMV notificeres. Lead faktureres ikke.</div>
+      </div>
+    </div>
+  </div>
+  <div class="hero">
+    <div class="hero-lbl">Hvad MatchHub leverer til Andel</div>
+    <div class="hero-title">Samme lead-pris.<br><span>Halvt så meget arbejde.</span></div>
+    <div class="hero-sub">Ingen oplæring af sælgere. Ingen manuel dataindsamling. GDPR-dokumenteret. Kontaktpræference angivet på hvert lead.</div>
+    <div class="hero-stats">
+      <div><div class="hs-v">1.000 kr</div><div class="hs-l">per lead</div></div>
+      <div><div class="hs-v">30 sek.</div><div class="hs-l">godkendelse</div></div>
+      <div><div class="hs-v">100%</div><div class="hs-l">GDPR-compliant</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- =================== KUNDEPORTAL =================== -->
+<div id="screen-kunde" class="screen">
+  <div class="screen-tag">Kundeportal</div>
+  <div class="screen-title">Min energioversigt</div>
+  <div class="screen-desc">Se status, administrer dit skift og træk samtykke tilbage.</div>
+  <div class="cp-portal">
+    <div class="cpp-head">
+      <div class="cpp-logo">MatchHub Kundeportal</div>
+      <div class="cpp-user">Hansen Tømrer ApS</div>
+    </div>
+    <div class="cpp-body">
+      <div class="savings-card">
+        <div><div class="savings-val">2.180 kr/md</div><div class="savings-lbl">Din estimerede besparelse</div></div>
+        <span class="tag tg">Skift igangsat</span>
+      </div>
+      <div class="status-card">
+        <div class="status-header"><div class="status-title">Igangværende skift</div><span class="tag tb">Under behandling</span></div>
+        <div class="status-row"><span class="status-key">Ny leverandør</span><span class="status-val">Andel Energi Erhverv</span></div>
+        <div class="status-row"><span class="status-key">Produkt</span><span class="status-val">Fastpris 1,80 kr/kWh</span></div>
+        <div class="status-row"><span class="status-key">Aktivering</span><span class="status-val">1. august 2025</span></div>
+        <div class="status-row"><span class="status-key">Status</span><span class="status-val" style="color:var(--amber);">Afventer godkendelse</span></div>
+        <div class="status-row"><span class="status-key">Kontaktønske</span><span class="status-val">Opkald ønsket</span></div>
+        <div class="status-row"><span class="status-key">Kan annulleres inden</span><span class="status-val" style="color:var(--red);">18.03.2025 kl. 14:32</span></div>
+        <div class="action-row">
+          <button class="btn btn-o" onclick="showCancel()">Annuller skift</button>
+          <button class="btn btn-o" onclick="changeSupplier()">Vælg anden leverandør</button>
+        </div>
+      </div>
+      <div class="cancel-warning" id="cancel-warning">
+        <strong>Er du sikker?</strong> Dit skift til Andel Energi Erhverv annulleres. Du kan starte et nyt skift til en anden leverandør bagefter.<br><br>
+        <div style="display:flex;gap:8px;margin-top:4px;">
+          <button class="btn btn-d" onclick="confirmCancel()">Ja, annuller skift</button>
+          <button class="btn btn-o" onclick="hideCancel()">Fortryd</button>
+        </div>
+      </div>
+      <div id="cancel-confirmed" style="display:none;">
+        <div style="background:var(--red-light);border:1px solid #F09595;border-radius:var(--r);padding:1rem;text-align:center;">
+          <div style="font-size:14px;font-weight:600;color:var(--red);margin-bottom:3px;">Skift annulleret</div>
+          <div style="font-size:12px;color:var(--red);opacity:0.8;">Dit skift er annulleret. Du kan starte forfra med en ny analyse.</div>
+          <button class="btn btn-p" onclick="goTo(1);switchView('flow')" style="margin-top:10px;">Start nyt skift</button>
+        </div>
+      </div>
+      <div class="divider"></div>
+      <div class="status-card">
+        <div class="status-header"><div class="status-title">Samtykke</div></div>
+        <div class="status-row"><span class="status-key">Givet</span><span class="status-val mono" style="font-size:12px;">18.03.2025 14:32:11</span></div>
+        <div class="status-row"><span class="status-key">Formål</span><span class="status-val">Energioptimering</span></div>
+        <div class="status-row"><span class="status-key">Status</span><span class="status-val" style="color:var(--green-dark);">Aktivt</span></div>
+        <button class="btn btn-o" style="margin-top:10px;width:100%;">Træk samtykke tilbage</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- =================== LEVERANDØRPORTAL =================== -->
+<div id="screen-lever" class="screen">
+  <div class="screen-tag">Leverandørportal · Andel Energi</div>
+  <div class="screen-title">Lead-oversigt</div>
+  <div class="screen-desc">Indgående leads i realtid med kontaktpræference og fuld dokumentation.</div>
+  <div class="stat-grid" style="margin-bottom:1.25rem;">
+    <div class="stat-box"><div class="sv">14</div><div class="sl">Nye leads i dag</div></div>
+    <div class="stat-box"><div class="sv green">71%</div><div class="sl">Konverteringsrate</div></div>
+    <div class="stat-box"><div class="sv">14.000 kr</div><div class="sl">Leadomk. i dag</div></div>
+  </div>
+  <div class="card" style="margin-bottom:1rem;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
+      <div class="card-title" style="margin-bottom:0;">Indgående leads</div>
+      <span class="tag tg">● Realtid</span>
+    </div>
+
+    <!-- Lead 1 -->
+    <div style="border:1px solid var(--border);border-radius:var(--r);padding:1rem;margin-bottom:10px;">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;">
+        <div><div style="font-size:14px;font-weight:600;color:var(--ink);">Hansen Tømrer ApS</div><div style="font-size:11px;color:var(--ink-muted);font-family:'DM Mono',monospace;">CVR 12345678 · Nu</div></div>
+        <span class="tag tb">Opkald ønsket</span>
+      </div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;">
+        <span class="tag ts">4.020 kWh/md</span><span class="tag ts">2,34 kr/kWh nu</span><span class="tag ts">Udløber jul 2025</span><span class="tag ts">Fastpris 12 mdr.</span>
+      </div>
+      <div style="font-size:11px;color:var(--green-dark);background:var(--green-light);padding:4px 8px;border-radius:5px;margin-bottom:8px;font-family:'DM Mono',monospace;">✓ GDPR-samtykke dokumenteret</div>
+      <div style="display:flex;gap:8px;">
+        <button class="btn btn-p" style="flex:1;" onclick="approveLead(this)">Godkend</button>
+        <button class="btn btn-o" onclick="rejectLead(this)">Afvis</button>
+      </div>
+    </div>
+
+    <!-- Lead 2 -->
+    <div style="border:1px solid var(--border);border-radius:var(--r);padding:1rem;margin-bottom:10px;">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;">
+        <div><div style="font-size:14px;font-weight:600;color:var(--ink);">Nexo Konsulenter A/S</div><div style="font-size:11px;color:var(--ink-muted);font-family:'DM Mono',monospace;">CVR 11223344 · 18 min siden</div></div>
+        <span class="tag ts">Ingen kontakt</span>
+      </div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;">
+        <span class="tag ts">9.200 kWh/md</span><span class="tag ts">2,41 kr/kWh nu</span><span class="tag ts">Udløber sep 2025</span><span class="tag ts">Variabel</span>
+      </div>
+      <div style="font-size:11px;color:var(--green-dark);background:var(--green-light);padding:4px 8px;border-radius:5px;margin-bottom:8px;font-family:'DM Mono',monospace;">✓ GDPR-samtykke dokumenteret</div>
+      <div style="display:flex;gap:8px;">
+        <button class="btn btn-p" style="flex:1;" onclick="approveLead(this)">Godkend</button>
+        <button class="btn btn-o" onclick="rejectLead(this)">Afvis</button>
+      </div>
+    </div>
+
+    <!-- Lead 3 - accepted -->
+    <div style="border:1px solid var(--border);border-radius:var(--r);padding:1rem;opacity:0.5;">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;">
+        <div><div style="font-size:14px;font-weight:600;color:var(--ink);">Bech & Søn Murerfirma</div><div style="font-size:11px;color:var(--ink-muted);font-family:'DM Mono',monospace;">CVR 87654321 · 1 time siden</div></div>
+        <span class="tag tg">Godkendt</span>
+      </div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;">
+        <span class="tag ts">1.840 kWh/md</span><span class="tag ts">2,28 kr/kWh nu</span><span class="tag ts">Fastpris 6 mdr.</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="background:var(--surface-2);">
+    <div class="card-title">Statistik — marts 2025</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px;">
+      <div class="pi"><div class="pi-l">Leads modtaget</div><div class="pi-v">47</div></div>
+      <div class="pi"><div class="pi-l">Godkendt</div><div class="pi-v green">33 (70%)</div></div>
+      <div class="pi"><div class="pi-l">Afvist</div><div class="pi-v" style="color:var(--red);">14 (30%)</div></div>
+      <div class="pi"><div class="pi-l">Omsætning til MH</div><div class="pi-v mono">47.000 kr</div></div>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<script>
+const companies = {
+  '12345678': {name:'Hansen Tømrer ApS',init:'HT',branche:'Byggeri og anlæg',ansatte:'12',adresse:'Industrivej 14, Brøndby',stiftet:'2011'},
+  '11223344': {name:'Nexo Konsulenter A/S',init:'NK',branche:'Rådgivning',ansatte:'28',adresse:'Østergade 22, København',stiftet:'2008'},
+  '87654321': {name:'Bech & Søn Murerfirma',init:'BM',branche:'Håndværk og byggeri',ansatte:'8',adresse:'Håndværkervej 5, Aarhus',stiftet:'2015'},
+};
+
+function resetAll() {
+  // Reset CVR
+  document.getElementById('cvr-input').value = '';
+  document.getElementById('co-box').style.display = 'none';
+  document.getElementById('consent-card').style.display = 'none';
+  // Reset verify section
+  document.getElementById('verify-section').style.display = 'none';
+  document.getElementById('email-input').value = '';
+  document.getElementById('phone-input').value = '';
+  document.getElementById('verify-code-section').style.display = 'none';
+  document.getElementById('verified-badge').style.display = 'none';
+  document.getElementById('continue-btn').style.display = 'none';
+  document.getElementById('verify-btn').textContent = 'Send kode';
+  document.getElementById('verify-btn').disabled = false;
+  // Reset analysis
+  document.getElementById('upload-zone').style.display = 'block';
+  document.getElementById('prog-wrap').style.display = 'none';
+  document.getElementById('analysis-result').style.display = 'none';
+  document.getElementById('prog-fill').style.width = '0%';
+  // Reset offers
+  document.getElementById('supplier-list').style.display = 'block';
+  document.getElementById('offer-accepted').style.display = 'none';
+  document.getElementById('offer-note').style.display = 'block';
+  document.getElementById('offer-title').textContent = 'Skift accepteret';
+  // Reset contact prefs to default (no)
+  contactPrefs = { andel:'no', norlys:'no', altid:'no' };
+  ['andel','norlys','altid'].forEach(s => {
+    document.getElementById('cp-'+s+'-yes').classList.remove('selected');
+    document.getElementById('cp-'+s+'-no').classList.add('selected');
+  });
+  // Reset portal
+  document.getElementById('portal-actions').style.display = 'block';
+  document.getElementById('portal-approved').style.display = 'none';
+  document.getElementById('portal-rejected').style.display = 'none';
+  // Go to screen 1
+  goTo(1);
+  switchView('flow');
+}
+
+let contactPrefs = { andel:'no', norlys:'no', altid:'no' };
+let currentView = 'flow';
+
+function lookupCVR() {
+  const v = document.getElementById('cvr-input').value;
+  if (v.length < 6) return;
+  const d = companies[v] || {name:'Virksomhed '+v+' ApS',init:v.substring(0,2).toUpperCase(),branche:'Servicevirksomhed',ansatte:'5-10',adresse:'Danmark',stiftet:'2018'};
+  document.getElementById('co-init').textContent = d.init;
+  document.getElementById('co-name').textContent = d.name;
+  document.getElementById('co-cvr').textContent = 'CVR: '+v;
+  document.getElementById('co-branche').textContent = d.branche;
+  document.getElementById('co-ansatte').textContent = d.ansatte;
+  document.getElementById('co-adresse').textContent = d.adresse;
+  document.getElementById('co-stiftet').textContent = d.stiftet;
+  document.getElementById('co-box').style.display = 'block';
+  document.getElementById('consent-card').style.display = 'block'; document.getElementById('verify-section').style.display = 'block';
+}
+
+function startAnalysis() {
+  document.getElementById('upload-zone').style.display = 'none';
+  document.getElementById('prog-wrap').style.display = 'block';
+  const steps = [[20,'Indlæser PDF...'],[40,'Genkender leverandør...'],[60,'Aflæser forbrug og pris...'],[80,'Sammenligner med markedet...'],[100,'Analyse klar']];
+  let i = 0;
+  const run = () => {
+    if (i >= steps.length) { setTimeout(()=>{ document.getElementById('prog-wrap').style.display='none'; document.getElementById('analysis-result').style.display='block'; },300); return; }
+    document.getElementById('prog-fill').style.width = steps[i][0]+'%';
+    document.getElementById('prog-status').textContent = steps[i][1];
+    document.getElementById('prog-pct').textContent = steps[i][0]+'%';
+    i++; setTimeout(run, 600);
+  };
+  run();
+}
+
+function selectContact(supplier, choice) {
+  contactPrefs[supplier] = choice;
+  document.getElementById('cp-'+supplier+'-yes').classList.toggle('selected', choice==='yes');
+  document.getElementById('cp-'+supplier+'-no').classList.toggle('selected', choice==='no');
+}
+
+function acceptOffer(name, saving, supplier) {
+  const pref = contactPrefs[supplier];
+  document.getElementById('supplier-list').style.display = 'none';
+  document.getElementById('offer-note').style.display = 'none';
+  document.getElementById('offer-title').textContent = 'Skift til '+name+' accepteret';
+  document.getElementById('offer-sub').textContent = pref==='yes' ? 'En rådgiver fra '+name+' kontakter dig inden for 1 arbejdsdag. Du kan annullere inden for 24 timer via din kundeportal.' : 'Skiftet håndteres automatisk. Du kan annullere inden for 24 timer via din kundeportal.';
+  document.getElementById('offer-accepted').style.display = 'block';
+  // Update lead package contact indicator
+  const ci = document.getElementById('lp-contact');
+  const ct = document.getElementById('lp-contact-text');
+  if (pref==='yes') { ci.className='contact-indicator ci-yes'; ct.className='ci-text-yes'; ct.textContent='KUNDESERVICE ØNSKET · RING INDEN AKTIVERING'; }
+  else { ci.className='contact-indicator ci-no'; ct.className='ci-text-no'; ct.textContent='INGEN KONTAKT ØNSKET · AKTIVER AUTOMATISK'; }
+  // Update portal contact banner
+  const pcb = document.getElementById('portal-contact-banner');
+  const pct = document.getElementById('portal-contact-text');
+  if (pref==='yes') { pcb.className='portal-contact-banner pcb-yes'; pct.innerHTML='<strong>Kunden ønsker opkald</strong> inden aktivering · Ring inden for 1 arbejdsdag'; pct.style.color='var(--blue)'; }
+  else { pcb.className='portal-contact-banner pcb-no'; pct.innerHTML='<strong>Ingen kontakt ønsket</strong> — aktiver automatisk uden opkald'; pct.style.color='var(--ink-muted)'; }
+}
+
+function approvePortal() { document.getElementById('portal-actions').style.display='none'; document.getElementById('portal-approved').style.display='block'; }
+function rejectPortal() { document.getElementById('portal-actions').style.display='none'; document.getElementById('portal-rejected').style.display='block'; }
+
+function approveLead(btn) { const card=btn.closest('div[style*="border:1px"]'); card.querySelector('.btn-p').textContent='Godkendt'; card.querySelector('.btn-p').disabled=true; card.style.opacity='0.5'; if(card.querySelector('.btn-o')) card.querySelector('.btn-o').style.display='none'; }
+function rejectLead(btn) { const card=btn.closest('div[style*="border:1px"]'); card.style.opacity='0.4'; btn.closest('div').style.display='none'; }
+
+function showCancel() { document.getElementById('cancel-warning').style.display='block'; }
+function hideCancel() { document.getElementById('cancel-warning').style.display='none'; }
+function confirmCancel() { document.getElementById('cancel-warning').style.display='none'; document.getElementById('cancel-confirmed').style.display='block'; document.querySelector('.status-card:first-of-type').style.opacity='0.4'; }
+function changeSupplier() { switchView('flow'); goTo(3); document.getElementById('supplier-list').style.display='block'; document.getElementById('offer-accepted').style.display='none'; document.getElementById('offer-note').style.display='block'; }
+
+function goTo(n) {
+  for (let i=1;i<=5;i++) {
+    const s=document.getElementById('screen-'+i); if(s) s.classList.remove('active');
+    const nav=document.getElementById('nav-'+i); if(nav) { nav.classList.remove('active','done'); if(i<n) nav.classList.add('done'); }
+  }
+  const target=document.getElementById('screen-'+n); if(target) target.classList.add('active');
+  const nav=document.getElementById('nav-'+n); if(nav) nav.classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function switchView(view) {
+  currentView = view;
+  ['flow','kunde','lever'].forEach(v => { document.getElementById('pv-'+v).classList.toggle('active', v===view); });
+  document.getElementById('step-nav').style.display = view==='flow' ? 'flex' : 'none';
+  ['screen-kunde','screen-lever'].forEach(s => document.getElementById(s).classList.remove('active'));
+  for (let i=1;i<=5;i++) { const s=document.getElementById('screen-'+i); if(s) s.classList.remove('active'); }
+  if (view==='flow') { document.getElementById('screen-1').classList.add('active'); }
+  else { document.getElementById('screen-'+view).classList.add('active'); }
+  window.scrollTo({top:0,behavior:'smooth'});
+
+function handleFileUpload(input) {
+  if (!input.files || !input.files[0]) return;
+  const file = input.files[0];
+  const zone = document.getElementById('upload-zone');
+  zone.innerHTML = '<div style="text-align:center;padding:0.5rem;"><div style="font-size:14px;font-weight:600;color:var(--green-dark);margin-bottom:4px;">✓ ' + file.name + '</div><div style="font-size:12px;color:var(--ink-muted);">' + (file.size/1024).toFixed(0) + ' KB uploadet</div></div>';
+  setTimeout(() => startAnalysis(), 600);
+}
+
+function sendVerification() {
+  const email = document.getElementById('email-input').value;
+  const phone = document.getElementById('phone-input').value;
+  if (!email || !phone) { alert('Udfyld venligst både email og mobilnummer.'); return; }
+  document.getElementById('verify-btn').textContent = 'Sendt ✓';
+  document.getElementById('verify-btn').disabled = true;
+  document.getElementById('verify-code-section').style.display = 'block';
+  document.getElementById('verify-hint').textContent = 'Kode sendt til ' + phone + ' · Gyldigt i 10 min';
+}
+
+function confirmVerification() {
+  const code = document.getElementById('code-input').value;
+  if (code.length < 4) { alert('Indtast venligst verifikationskoden.'); return; }
+  document.getElementById('verify-code-section').style.display = 'none';
+  document.getElementById('verified-badge').style.display = 'block';
+  document.getElementById('continue-btn').style.display = 'block';
+}
+</script>
+</body>
+</html>
