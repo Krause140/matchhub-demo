@@ -781,6 +781,7 @@ function switchView(view) {
   if (view==='flow') { document.getElementById('screen-1').classList.add('active'); }
   else { document.getElementById('screen-'+view).classList.add('active'); }
   window.scrollTo({top:0,behavior:'smooth'});
+}
 
 function handleFileUpload(input) {
   if (!input.files || !input.files[0]) return;
